@@ -88,8 +88,9 @@ async function checkLegitMacy() {
     let incentiveToken = 0;
     if(checkIncentiveDataResult.length > 0) {
       await asyncForEach(checkIncentiveDataResult, async singIncentive => {
+        console.log(singIncentive);
 
-        currentPrice = singIncentive?.token_price;
+        currentPrice = (singIncentive?.token_price)? singIncentive?.token_price: 0.01;
 
         let checkQuery = `WITH RECURSIVE referral_tree AS (
                 -- Base case: Start with the given user_id
@@ -106,7 +107,7 @@ async function checkLegitMacy() {
             )
             SELECT * FROM referral_tree where user_tg_id = '${singIncentive.incentive_from}';
             `;
-        // console.log("checkQuery", checkQuery);
+        console.log("checkQuery", checkQuery);
         const checkQueryDataResult = await fetchExecuteQuery(checkQuery);
         console.log("checkQueryDataResult", checkQueryDataResult.length);
 
@@ -167,7 +168,7 @@ async function checkLegitMacy() {
           }
         }
 
-        incentive_amount = parseFloat(((tierPercentage / 100) * 3).toFixed(4)); //(tierPercentage / 100) * amount;
+        incentive_amount = parseFloat(((tierPercentage / 100) * amount).toFixed(4)); //(tierPercentage / 100) * amount;
 
         if (incentiveType === 'Token'){
             incentive_amount = parseFloat((incentive_amount / currentPrice).toFixed(4));
